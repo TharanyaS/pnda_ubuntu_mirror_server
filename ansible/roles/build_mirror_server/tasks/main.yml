@@ -1,0 +1,27 @@
+---
+ - copy:
+     src: "{{ playbook_dir }}/pnda.tar"
+     dest: "/home/{{ ansible_user }}/"
+ - name: extract tar file
+   unarchive:
+     src: "/home/{{ ansible_user }}/pnda.tar"
+     dest: "/home/{{ ansible_user }}/"
+     remote_src: yes
+ - name: create mirror
+   shell: chdir="/home/{{ ansible_user }}/pnda/mirror" ./create_mirror.sh>create_mirror.log
+   async: 3600
+   poll: 100
+ - name: adding private ip in /etc/hosts file
+   lineinfile:
+     path: /etc/hosts
+     line: "127.0.1.1 ip-{{ private_ip }}"
+     insertafter: EOF
+ - name: install build tools
+   shell: chdir="/home/{{ ansible_user }}/pnda/build" ./install-build-tools.sh>build_tools.log
+ - name: build pnda
+   shell: chdir="/home/{{ ansible_user }}/pnda/build" source set-pnda-env.sh && ./build-pnda.sh {{ tag }} {{ value }}>pnda_build.log
+   args:
+     executable: /bin/bash
+   async: 3600
+   poll: 100
+

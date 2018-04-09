@@ -1,0 +1,25 @@
+---
+ - name: Gathering facts
+   setup:
+
+ - name: install apache webserver
+   action: apt name={{ item }} state=latest
+   with_items:
+     - apache2
+   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+ - name: install httpd webserver
+   action: yum name={{ item }} state=latest
+   with_items:
+     - httpd
+   when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+ - name: copy mirror-dist to /var/www/html
+   command: "cp -r /home/{{ ansible_user }}/pnda/mirror/mirror-dist/. /var/www/html"
+   async: 1800
+   poll: 100
+ - name: copy pnda-dist to /var/www/html
+   command: "cp -r /home/{{ ansible_user }}/pnda/build/pnda-dist/. /var/www/html"
+   async: 600
+   poll: 100
+ - name: removing index.html
+   command: mv /var/www/html/index.html /home/{{ ansible_user }}/
+

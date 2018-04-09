@@ -1,0 +1,17 @@
+---
+ - action: apt name={{ item }} state=latest
+   with_items:
+     - git
+   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+ - action: yum name={{ item }} state=latest
+   with_items:
+     - git  
+   when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+ - git:
+    repo: https://github.com/pndaproject/pnda.git
+    dest: "{{ playbook_dir }}/pnda"
+ - name: checkout
+   command: chdir="{{ playbook_dir }}/pnda" git checkout  "{{ branch }}"
+ - archive:
+     path: "{{ playbook_dir }}/pnda"
+     dest: "{{ playbook_dir }}/pnda.tar"

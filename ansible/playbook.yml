@@ -1,0 +1,18 @@
+---
+  - hosts: localhost
+    roles:
+      - gitclone
+
+  - hosts: all 
+    become: yes
+    gather_facts: false
+    tasks:
+      - name: wait for connection 600 seconds
+        wait_for_connection:
+        
+      - name: Gathering facts
+        setup:
+
+    roles:
+      - build_mirror_server
+      - config_webserver
