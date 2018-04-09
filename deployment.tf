@@ -40,11 +40,14 @@ output "mirror_server_ip" {
 }
 
 resource "local_file" "cluster_ip" {
-  depends_on = ["${aws_instance.mirror}"]
+  depends_on = ["aws_instance.mirror"]
   content = "${aws_instance.mirror.public_ip}"
   filename = "${path.cwd}/output.yaml"
+}
+
 locals {
   private_ip="${replace(aws_instance.mirror.private_ip, ".", "-")}"
+
 }
 output "private_ip" {
   value = "${local.private_ip}"
