@@ -42,7 +42,7 @@ output "mirror_server_ip" {
 resource "local_file" "cluster_ip" {
   depends_on = ["aws_instance.mirror"]
   content = "${aws_instance.mirror.public_ip}"
-  filename = "${path.cwd}/output.yaml"
+  filename = "${path.cwd}/output.txt"
 }
 
 locals {

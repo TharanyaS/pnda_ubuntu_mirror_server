@@ -4,8 +4,6 @@ variable "access_key" {}
 
 variable "secret_key" {}
 
-variable "stackname" {}
-
 variable "ssh_user" {
       "type" = "string",
       "default" = "ubuntu",
@@ -13,9 +11,6 @@ variable "ssh_user" {
 }
 
 variable "ssh_key_name" {
-      "type" = "string",
-      "default" = "ubuntu_key",
-      "description" = "Keypair to enable for ssh access to instances"
 }
 
 variable "image_id" {
