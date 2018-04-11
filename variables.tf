@@ -11,6 +11,7 @@ variable "ssh_user" {
 }
 
 variable "ssh_key_name" {
+      "default" = "ubuntu_key"
 }
 
 variable "image_id" {
@@ -26,15 +27,15 @@ variable "instance_type" {
 }
 
 variable "playbookpath" {
-  default = "./ansible"
+      "default" = "./ansible"
 }
 
 variable "playbookname" {
-  default = "playbook.yml"
+      "default" = "playbook.yml"
 }
 
 variable "ssh_key_path" {
-  default = "./keys"
+      "default" = "./keys"
 }
 variable "tag" {
       "default" = "BOM"

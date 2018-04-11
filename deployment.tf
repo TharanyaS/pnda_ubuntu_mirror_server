@@ -40,7 +40,7 @@ output "mirror_server_ip" {
 }
 
 resource "local_file" "cluster_ip" {
-  depends_on = ["aws_instance.mirror"]
+  depends_on = [ "null_resource.ansiblerun" ]
   content = "${aws_instance.mirror.public_ip}"
   filename = "${path.cwd}/output.txt"
 }
@@ -53,26 +53,20 @@ output "private_ip" {
   value = "${local.private_ip}"
 }
 
-resource "null_resource" "hosts" {
-  depends_on = [
-    "aws_instance.mirror"]
-  provisioner "local-exec" {
-    command = "echo \"mirror ansible_host=${aws_instance.mirror.public_ip} private_ip=${local.private_ip} tag=${var.tag} branch=${var.branch} value=${var.value}\n\n\" > hosts"  
-}
+resource "local_file" "hosts" {
+  depends_on = [ "aws_instance.mirror" ]
+  content = "mirror ansible_host=${aws_instance.mirror.public_ip} private_ip=${local.private_ip} tag=${var.tag} branch=${var.branch} value=${var.value}"
+  filename = "${path.cwd}/hosts"
 }
 
 resource "null_resource" "keypermisions" {
-  depends_on = [
-    "null_resource.hosts"
-  ]
+  depends_on = [ "local_file.hosts" ]
   provisioner "local-exec" {
     command = "chmod 400 ${var.ssh_key_path}/*"
   }
 }
 resource "null_resource" "ansiblerun" {
-  depends_on = [
-    "null_resource.hosts"
-  ]
+  depends_on = [ "local_file.hosts", "null_resource.keypermisions" ]
 
   provisioner "local-exec" {
     command = "export ANSIBLE_CONFIG=./ansible/ansible.cfg && export ANSIBLE_HOST_KEY_CHECKING=False && ansible-playbook --user=${var.ssh_user} -i hosts --extra-vars branch=${var.branch} --key-file=${var.ssh_key_path}/${var.ssh_key_name}.pem ${var.playbookpath}/${var.playbookname}"
