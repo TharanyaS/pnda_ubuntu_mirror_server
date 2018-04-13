@@ -1,0 +1,8 @@
+{
+  "name": "PNDA mirror server - ubuntu - aws",
+  "type": "terraform",
+  "target_cloud": "aws",
+  "description": "Creates ubuntu mirror server for PNDA deployment. Tested on us-east-1 region",
+  "prerequisites": "",
+  "limitations": ""
+}

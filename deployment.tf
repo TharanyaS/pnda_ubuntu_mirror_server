@@ -3,6 +3,7 @@ provider "aws" {
   access_key = "${var.access_key}"
   secret_key = "${var.secret_key}"
 }
+
 data "aws_ami" "ubuntu1404" {
   most_recent = true
   owners = [
@@ -18,6 +19,7 @@ data "aws_ami" "ubuntu1404" {
       "hvm"]
   }
 }
+
 resource "aws_instance" "mirror" {
   ami           = "${data.aws_ami.ubuntu1404.id}"
   instance_type = "${var.instance_type}"
@@ -32,7 +34,7 @@ resource "aws_instance" "mirror" {
   }
   associate_public_ip_address = "true"
   tags {
-    Name = "PNDA_MIRROR_UBUNTU"
+    Name = "PNDA-mirror-server-ubuntu"
   }
 }
 output "mirror_server_ip" {
@@ -49,6 +51,7 @@ locals {
   private_ip="${replace(aws_instance.mirror.private_ip, ".", "-")}"
 
 }
+
 output "private_ip" {
   value = "${local.private_ip}"
 }
@@ -65,6 +68,7 @@ resource "null_resource" "keypermisions" {
     command = "chmod 400 ${var.ssh_key_path}/*"
   }
 }
+
 resource "null_resource" "ansiblerun" {
   depends_on = [ "local_file.hosts", "null_resource.keypermisions" ]
 
@@ -72,6 +76,7 @@ resource "null_resource" "ansiblerun" {
     command = "export ANSIBLE_CONFIG=./ansible/ansible.cfg && export ANSIBLE_HOST_KEY_CHECKING=False && ansible-playbook --user=${var.ssh_user} -i hosts --extra-vars branch=${var.branch} --key-file=${var.ssh_key_path}/${var.ssh_key_name}.pem ${var.playbookpath}/${var.playbookname}"
   }
 }
+
 resource "aws_security_group" "deployment_sec_grp" {
   description = "Mirror server security group"
   ingress {
