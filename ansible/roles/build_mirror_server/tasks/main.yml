@@ -11,10 +11,14 @@
    shell: chdir="/home/{{ ansible_user }}/pnda/mirror" ./create_mirror.sh>create_mirror.log
    async: 3600
    poll: 100
+ - name: Getting hostname
+   command: hostname
+   register: hostname
+
  - name: adding private ip in /etc/hosts file
    lineinfile:
      path: /etc/hosts
-     line: "127.0.1.1 ip-{{ private_ip }}"
+     line: "127.0.1.1 {{ hostname.stdout }}"
      insertafter: EOF
  - name: install build tools
    shell: chdir="/home/{{ ansible_user }}/pnda/build" ./install-build-tools.sh>build_tools.log
